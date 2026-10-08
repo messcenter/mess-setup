@@ -1,0 +1,11 @@
+{
+  "name": "@messcenter/setup",
+  "version": "0.1.0",
+  "description": "Install the MESS CLI and open its development setup wizard",
+  "license": "UNLICENSED",
+  "type": "module",
+  "bin": { "mess-setup": "bin/setup.js" },
+  "files": ["bin/setup.js", "install.sh", "README.md"],
+  "engines": { "bun": ">=1.3.11" },
+  "repository": { "type": "git", "url": "https://github.com/messcenter/mess-setup.git" }
+}

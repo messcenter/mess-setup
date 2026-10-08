@@ -1,0 +1,32 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+concurrency:
+  group: setup-release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with: { bun-version: "1.4.2" }
+      - name: Check the tag and installer
+        run: |
+          test "$GITHUB_REF_NAME" = "v$(bun -p 'require("./package.json").version')"
+          sh -n install.sh
+          bun bin/setup.js --help
+      - name: Pack only the public bootstrap
+        run: |
+          bun pm pack --filename mess-setup.tgz --ignore-scripts
+          tar -tzf mess-setup.tgz | sort > actual-files
+          printf '%s\n' package/README.md package/bin/setup.js package/install.sh package/package.json | sort > expected-files
+          diff -u expected-files actual-files
+          sha256sum mess-setup.tgz install.sh > SHA256SUMS
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes mess-setup.tgz install.sh SHA256SUMS
