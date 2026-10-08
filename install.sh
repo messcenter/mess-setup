@@ -97,6 +97,19 @@ case "$os-$arch" in
 	*) die "unsupported platform: $os-$arch (supported: Linux x86_64, macOS arm64)" ;;
 esac
 
+# Reuse an installed, compatible CLI when no specific release was requested.
+# This also prevents an older published release from replacing a newer local CLI.
+if [ "$setup" -eq 1 ] && [ -z "${MESS_VERSION:-}" ] && [ -x "$BIN_DIR/mess" ]; then
+	installed_help="$("$BIN_DIR/mess" dev setup --help 2>/dev/null || true)"
+	case "$installed_help" in
+		*--directory*)
+			printf '%s\n' "==> using installed CLI: $BIN_DIR/mess"
+			PATH="$BIN_DIR:$PATH"
+			export PATH
+			exec "$BIN_DIR/mess" dev setup "$@" < /dev/tty ;;
+	esac
+fi
+
 tag="${MESS_VERSION:-latest}"
 if [ -n "${MESS_BASE_URL:-}" ]; then
 	base="$MESS_BASE_URL"
