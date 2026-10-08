@@ -23,9 +23,8 @@ A compatible CLI already installed on this machine is reused unless
 include `dev setup`, and the chosen MESS checkout must include `dev:env`.
 The installer detects older CLI releases and preserves any existing install.
 
-Current rollout: the public bootstrap is available; the new private CLI and
-platform setup changes still need to be released before fresh-server setup can
-complete. `--install-only` can install the existing CLI without starting setup.
+CLI v0.1.2 and later include the development setup wizard. Select the MESS
+`develop` branch (the default) for the matching platform setup commands.
 
 The shell installer can install missing `gh` on Ubuntu, or on macOS when
 Homebrew is already installed. It asks before installing system packages, then
