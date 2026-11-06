@@ -170,6 +170,22 @@ staged=""
 
 echo "==> installed mess $version -> $BIN_DIR/mess"
 
+# One-word entry points (`mess-int` = `mess int`, `mess-cli` = `mess cli`): relative
+# links to the binary, so every later update reaches them. Keep this list equal to
+# SHORTCUTS in src/shortcuts.ts (test/shortcuts.test.ts). A file of the same name
+# that is not our link belongs to the user and is left alone.
+for shortcut in mess-int mess-cli; do
+	link="$BIN_DIR/$shortcut"
+	if [ -L "$link" ] && [ "$(readlink "$link")" = mess ]; then
+		:
+	elif [ -e "$link" ] || [ -L "$link" ]; then
+		echo "    warning: $link exists and is not a link to mess; left unchanged"
+	else
+		ln -s mess "$link"
+		echo "==> linked $shortcut -> $BIN_DIR/mess"
+	fi
+done
+
 case ":$PATH:" in
 	*":$BIN_DIR:"*) ;;
 	*) echo "    warning: $BIN_DIR is not on your PATH" ;;
